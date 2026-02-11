@@ -1,1 +1,1 @@
-# preppal-mobile
+# PrepPal - A Food Waste Management System
