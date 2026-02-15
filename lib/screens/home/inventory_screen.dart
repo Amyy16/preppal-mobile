@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/inventory_item.dart';
 import 'add_inventory_screen.dart';

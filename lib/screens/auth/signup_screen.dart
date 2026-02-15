@@ -290,9 +290,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Password required';
-                          final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\\d).{8,}$');
+                          final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
                           if (!pattern.hasMatch(v)) {
-                            return 'Use at least 8 chars with letters and numbers';
+                            return 'Use at least 8 chars: letters, numbers, #, \$, %, *';
                           }
                           return null;
                         },
@@ -304,9 +304,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         decoration: const InputDecoration(labelText: 'Confirm password'),
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Confirm password';
-                          final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\\d).{8,}$');
+                          final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
                           if (!pattern.hasMatch(v)) {
-                            return 'Use at least 8 chars with letters and numbers';
+                            return 'Use at least 8 chars: letters, numbers, #, \$, %, *';
                           }
                           return null;
                         },

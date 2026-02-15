@@ -100,7 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool _isValidPassword(String value) {
-    final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\d).{8,}$');
+    // Pattern requires: letters, at least one digit (0-9) or special char (#$%*), and 8+ chars
+    final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
     return pattern.hasMatch(value);
   }
 
@@ -275,9 +276,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Password is required';
-                        final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+                        final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
                         if (!pattern.hasMatch(v)) {
-                          return 'Use at least 8 chars with letters and numbers';
+                          return 'Use at least 8 chars: letters, numbers, #, \$, %, *';
                         }
                         return null;
                       },
