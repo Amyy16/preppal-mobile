@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/api_service.dart';
 import '../home/home_screen.dart';
 import 'signup_screen.dart';
 
@@ -51,62 +52,44 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final prefs = await SharedPreferences.getInstance();
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      // Get stored credentials
-      final storedEmail = prefs.getString('user_email');
-      final storedPassword = prefs.getString('user_password');
-
-      // Simulate API delay
-      await Future.delayed(const Duration(milliseconds: 800));
+      // Call API login
+      final response = await ApiService.login(email: email, password: password);
 
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      // Validate credentials
-      if (storedEmail != null && storedPassword != null) {
-        // User exists - validate credentials
-        if (email == storedEmail && password == storedPassword) {
-          // Login successful
-          await prefs.setBool('isLoggedIn', true);
-          await prefs.setBool('remember_me', _rememberMe);
-          if (_rememberMe) {
-            await prefs.setString('user_email', email);
-            await prefs.setString('user_password', password);
-          } else {
-            await prefs.remove('user_password');
-          }
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login successful!'), duration: Duration(milliseconds: 500)),
-          );
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        } else {
-          // Invalid credentials
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid email or password'), duration: Duration(seconds: 2)),
-          );
-        }
-      } else {
-        // No user registered - auto-register and login
+      // Save credentials if "remember me" is checked
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setBool('remember_me', _rememberMe);
+      
+      if (_rememberMe) {
         await prefs.setString('user_email', email);
-        if (_rememberMe) {
-          await prefs.setString('user_password', password);
-        }
-        await prefs.setBool('remember_me', _rememberMe);
-        await prefs.setBool('isLoggedIn', true);
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created and logged in!'), duration: Duration(milliseconds: 500)),
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        await prefs.setString('user_password', password);
+      } else {
+        await prefs.remove('user_password');
       }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful!'),
+          duration: Duration(milliseconds: 500),
+        ),
+      );
+      
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.message}')),
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);

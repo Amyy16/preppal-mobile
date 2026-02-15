@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/api_service.dart';
 import '../home/home_screen.dart';
 import 'login_screen.dart';
 
@@ -110,7 +111,7 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_passwordController.text != _confirmController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,34 +123,25 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final prefs = await SharedPreferences.getInstance();
       final email = _emailController.text.trim();
       final password = _passwordController.text;
       final businessName = _businessController.text.trim();
       final phone = _phoneController.text.trim();
-      final fullPhone = '$_selectedCountryCode$phone';
 
-      // Check if user already exists
-      final existingEmail = prefs.getString('user_email');
-
-      // Simulate API delay
-      await Future.delayed(const Duration(milliseconds: 800));
+      // Call API signup
+      final response = await ApiService.signup(
+        email: email,
+        password: password,
+        businessName: businessName,
+        phoneNumber: phone,
+        countryCode: _selectedCountryCode,
+      );
 
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      if (existingEmail == email) {
-        // User already exists
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email already registered. Please log in instead.'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-        return;
-      }
-
-      // Store user data
+      // Save user data locally
+      final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_email', email);
       await prefs.setBool('remember_me', _rememberMe);
       if (_rememberMe) {
@@ -158,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen> {
         await prefs.remove('user_password');
       }
       await prefs.setString('business_name', businessName);
-      await prefs.setString('user_phone', fullPhone);
+      await prefs.setString('user_phone', '$_selectedCountryCode$phone');
       await prefs.setString('user_country_code', _selectedCountryCode);
       await prefs.setBool('isLoggedIn', true);
 
@@ -171,6 +163,12 @@ class _SignupScreenState extends State<SignupScreen> {
       );
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signup failed: ${e.message}')),
       );
     } catch (e) {
       if (!mounted) return;
