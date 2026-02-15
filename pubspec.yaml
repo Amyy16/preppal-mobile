@@ -1,0 +1,76 @@
+# ----------------------------------------------------------------
+# Project Information
+# ----------------------------------------------------------------
+name: prepal_app                        # The name of your Flutter project
+description: "Reduce food waste, save money"  # Short description of your app
+publish_to: 'none'                      # Prevents accidental publishing to pub.dev
+
+# ----------------------------------------------------------------
+# Versioning
+# ----------------------------------------------------------------
+version: 1.0.0+1                        # Version number: major.minor.patch + build number
+
+# ----------------------------------------------------------------
+# Dart SDK Environment
+# ----------------------------------------------------------------
+environment:
+  sdk: ^3.10.1                           # Specifies the Dart SDK version range compatible with this project
+
+# ----------------------------------------------------------------
+# Dependencies
+# ----------------------------------------------------------------
+dependencies:
+  flutter:
+    sdk: flutter                         # Include Flutter SDK
+
+  # Cupertino icons: iOS-style icons you can use in your app
+  cupertino_icons: ^1.0.8
+
+  # Shared Preferences: for storing small key-value data locally
+  shared_preferences: ^2.1.0
+
+  # Intl: for date formatting
+  intl: ^0.19.0
+
+  # UUID: for generating unique IDs
+  uuid: ^4.0.0
+
+# ----------------------------------------------------------------
+# Development Dependencies
+# ----------------------------------------------------------------
+dev_dependencies:
+  flutter_test:
+    sdk: flutter                         # Provides Flutter's testing framework for unit/widget testing
+
+  # Flutter lints: recommended coding style and best practices
+  flutter_lints: ^6.0.0
+
+# ----------------------------------------------------------------
+# Flutter-specific settings
+# ----------------------------------------------------------------
+flutter:
+  # Use Material Design icons and widgets
+  uses-material-design: true
+
+  # -------------------------------
+  # Assets (Images, Fonts, etc.)
+  # -------------------------------
+  # Any files listed here will be included in the app bundle
+  assets:
+    - assets/images/prepal_logo.png       # The PrePal app logo image
+    # Note: Make sure the path matches exactly (folder names and file name)
+    # Example: If your file is in assets/images/, use this path.
+    # You can add more images by listing them here, one per line:
+    # - assets/images/another_image.png
+    # - assets/icons/icon.png
+
+# -------------------------------
+# Optional: Fonts Section
+# -------------------------------
+# You can add custom fonts here if needed
+# fonts:
+#   - family: CustomFont
+#     fonts:
+#       - asset: fonts/CustomFont-Regular.ttf
+#       - asset: fonts/CustomFont-Bold.ttf
+#         weight: 700
