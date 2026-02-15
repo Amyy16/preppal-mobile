@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/inventory_item.dart';
 import 'add_inventory_screen.dart';
 
@@ -21,9 +22,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   void _loadItems() {
-    // TODO: Load items from Hive database
+    final box = Hive.box<InventoryItem>('inventory');
     setState(() {
-      _items = [];
+      _items = box.values.toList();
     });
   }
 
@@ -48,10 +49,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // TODO: Delete from database
-              Navigator.pop(context);
-              _loadItems();
+            onPressed: () async {
+              final box = Hive.box<InventoryItem>('inventory');
+              final key = box.keys.firstWhere(
+                (key) => box.get(key)?.id == item.id,
+                orElse: () => null,
+              );
+              if (key != null) {
+                await box.delete(key);
+              }
+              if (mounted) {
+                Navigator.pop(context);
+                _loadItems();
+              }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),

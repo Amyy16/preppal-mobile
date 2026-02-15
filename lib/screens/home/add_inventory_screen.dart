@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/inventory_item.dart';
 
 class AddInventoryScreen extends StatefulWidget {
@@ -59,7 +60,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final item = InventoryItem(
@@ -74,11 +75,25 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
       notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
     );
 
-    // TODO: Save to Hive database
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(widget.item == null ? 'Item added!' : 'Item updated!')),
-    );
-    Navigator.pop(context, true);
+    final box = Hive.box<InventoryItem>('inventory');
+    if (widget.item == null) {
+      await box.add(item);
+    } else {
+      final key = box.keys.firstWhere(
+        (key) => box.get(key)?.id == widget.item!.id,
+        orElse: () => null,
+      );
+      if (key != null) {
+        await box.put(key, item);
+      }
+    }
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(widget.item == null ? 'Item added!' : 'Item updated!')),
+      );
+      Navigator.pop(context, true);
+    }
   }
 
   @override

@@ -35,6 +35,10 @@ dependencies:
   # UUID: for generating unique IDs
   uuid: ^4.0.0
 
+  # Hive: NoSQL database for local storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
 # ----------------------------------------------------------------
 # Development Dependencies
 # ----------------------------------------------------------------
@@ -44,6 +48,10 @@ dev_dependencies:
 
   # Flutter lints: recommended coding style and best practices
   flutter_lints: ^6.0.0
+
+  # Hive code generator for model adapters
+  hive_generator: ^2.0.0
+  build_runner: ^2.4.0
 
 # ----------------------------------------------------------------
 # Flutter-specific settings

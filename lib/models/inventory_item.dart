@@ -1,12 +1,34 @@
+import 'package:hive/hive.dart';
+
+part 'inventory_item.g.dart';
+
+@HiveType(typeId: 0)
 class InventoryItem {
+  @HiveField(0)
   final String id;
+  
+  @HiveField(1)
   final String name;
+  
+  @HiveField(2)
   final String category;
+  
+  @HiveField(3)
   final double quantity;
+  
+  @HiveField(4)
   final String unit; // kg, liter, piece, etc.
+  
+  @HiveField(5)
   final DateTime expiryDate;
+  
+  @HiveField(6)
   final DateTime dateAdded;
+  
+  @HiveField(7)
   final double costPerUnit;
+  
+  @HiveField(8)
   final String? notes;
 
   InventoryItem({

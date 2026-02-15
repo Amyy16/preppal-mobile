@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../models/waste_log.dart';
 
 class WasteScreen extends StatefulWidget {
@@ -19,9 +20,9 @@ class _WasteScreenState extends State<WasteScreen> {
   }
 
   void _loadWasteLogs() {
-    // TODO: Load from Hive database
+    final box = Hive.box<WasteLog>('waste_logs');
     setState(() {
-      _wasteLogs = [];
+      _wasteLogs = box.values.toList();
     });
   }
 
@@ -217,9 +218,18 @@ class _WasteScreenState extends State<WasteScreen> {
           itemBuilder: (context) => [
             PopupMenuItem(
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                // TODO: Delete from database
-                _loadWasteLogs();
+              onTap: () async {
+                final box = Hive.box<WasteLog>('waste_logs');
+                final key = box.keys.firstWhere(
+                  (key) => box.get(key)?.id == log.id,
+                  orElse: () => null,
+                );
+                if (key != null) {
+                  await box.delete(key);
+                  if (mounted) {
+                    _loadWasteLogs();
+                  }
+                }
               },
             ),
           ],
@@ -268,7 +278,7 @@ class _AddWasteScreenState extends State<AddWasteScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final wasteLog = WasteLog(
@@ -283,11 +293,15 @@ class _AddWasteScreenState extends State<AddWasteScreen> {
       notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
     );
 
-    // TODO: Save to Hive database
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Waste logged!')),
-    );
-    Navigator.pop(context, true);
+    final box = Hive.box<WasteLog>('waste_logs');
+    await box.add(wasteLog);
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Waste logged!')),
+      );
+      Navigator.pop(context, true);
+    }
   }
 
   @override

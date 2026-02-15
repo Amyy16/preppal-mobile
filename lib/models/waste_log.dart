@@ -1,12 +1,34 @@
+import 'package:hive/hive.dart';
+
+part 'waste_log.g.dart';
+
+@HiveType(typeId: 1)
 class WasteLog {
+  @HiveField(0)
   final String id;
+  
+  @HiveField(1)
   final String itemName;
+  
+  @HiveField(2)
   final String category;
+  
+  @HiveField(3)
   final double quantity;
+  
+  @HiveField(4)
   final String unit;
+  
+  @HiveField(5)
   final String reason; // Expired, Spoiled, Damaged, Over-purchased, etc.
+  
+  @HiveField(6)
   final double costLost;
+  
+  @HiveField(7)
   final DateTime dateLogged;
+  
+  @HiveField(8)
   final String? notes;
 
   WasteLog({
