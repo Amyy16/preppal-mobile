@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool _isValidPassword(String value) {
-    final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+    final pattern = RegExp(r'^(?=.*[A-Za-z])(?=.*\d).{8,}$');
     return pattern.hasMatch(value);
   }
 
