@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
+import '../settings/settings_screen.dart';
 import 'inventory_screen.dart';
 import 'waste_screen.dart';
 
@@ -170,8 +171,8 @@ class ActivitiesScreen extends StatelessWidget {
                 subtitle: 'Manage your account and preferences',
                 color: const Color(0xFF9C27B0),
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coming Soon: Settings')),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
                   );
                 },
               ),
