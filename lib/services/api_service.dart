@@ -154,6 +154,90 @@ class ApiService {
     }
   }
 
+  /// Get user account information
+  static Future<Map<String, dynamic>> getAccount() async {
+    try {
+      _checkAuth();
+
+      // Mock delay
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Return mock user data
+      return {
+        'success': true,
+        'user': {
+          'id': 'user_123',
+          'email': 'user@example.com',
+          'businessName': 'My Business',
+          'phoneNumber': '+234 XXX XXX XXXX',
+          'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
+          'notificationsEnabled': true,
+          'expiryAlerts': true,
+          'wasteReminders': true,
+        },
+      };
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// Update account information
+  static Future<Map<String, dynamic>> updateAccount({
+    String? businessName,
+    String? phoneNumber,
+    bool? notificationsEnabled,
+    bool? expiryAlerts,
+    bool? wasteReminders,
+  }) async {
+    try {
+      _checkAuth();
+
+      // Mock delay
+      await Future.delayed(const Duration(milliseconds: 600));
+
+      return {
+        'success': true,
+        'message': 'Account updated successfully',
+        'user': {
+          'businessName': businessName,
+          'phoneNumber': phoneNumber,
+          'notificationsEnabled': notificationsEnabled,
+          'expiryAlerts': expiryAlerts,
+          'wasteReminders': wasteReminders,
+        },
+      };
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  /// Delete user account
+  static Future<Map<String, dynamic>> deleteAccount({
+    required String password,
+  }) async {
+    try {
+      _checkAuth();
+
+      // Mock delay
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // Validation
+      if (password.isEmpty) {
+        throw ApiException('Password is required to delete account');
+      }
+
+      // Clear token after deletion
+      _authToken = null;
+
+      return {
+        'success': true,
+        'message': 'Account deleted successfully',
+      };
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   // ============ INVENTORY ============
 
   /// Get all inventory items for user
