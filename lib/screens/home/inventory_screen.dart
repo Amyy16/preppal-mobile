@@ -82,6 +82,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
         foregroundColor: Colors.black,
         centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_forward, color: Colors.black),
+            onPressed: _navigateToAddItem,
+          ),
+        ],
       ),
       body: filteredItems.isEmpty
           ? _buildEmptyState()

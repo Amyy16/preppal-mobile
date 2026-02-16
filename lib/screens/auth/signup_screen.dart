@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/api_service.dart';
 import '../home/home_screen.dart';
 import 'login_screen.dart';
+import 'verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -13,16 +14,14 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _businessController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
-  bool _obscure = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
   bool _isLoading = false;
-  bool _rememberMe = true;
-  String _selectedCountryCode = '+234';
 
   static const List<Map<String, String>> _countryCodes = [
     {'name': 'Nigeria', 'code': '+234'},
@@ -82,30 +81,9 @@ class _SignupScreenState extends State<SignupScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _loadRememberedCredentials();
-  }
-
-  Future<void> _loadRememberedCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final remember = prefs.getBool('remember_me') ?? true;
-      if (!mounted) return;
-      setState(() => _rememberMe = remember);
-      _selectedCountryCode = prefs.getString('user_country_code') ?? _selectedCountryCode;
-      if (remember) {
-        _emailController.text = prefs.getString('user_email') ?? '';
-        _passwordController.text = prefs.getString('user_password') ?? '';
-      }
-    } catch (_) {}
-  }
-
-  @override
   void dispose() {
-    _businessController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -125,16 +103,15 @@ class _SignupScreenState extends State<SignupScreen> {
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
-      final businessName = _businessController.text.trim();
-      final phone = _phoneController.text.trim();
+      final username = _usernameController.text.trim();
 
       // Call API signup
       final response = await ApiService.signup(
         email: email,
         password: password,
-        businessName: businessName,
-        phoneNumber: phone,
-        countryCode: _selectedCountryCode,
+        businessName: username,
+        phoneNumber: '',
+        countryCode: '',
       );
 
       if (!mounted) return;
@@ -143,26 +120,21 @@ class _SignupScreenState extends State<SignupScreen> {
       // Save user data locally
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_email', email);
-      await prefs.setBool('remember_me', _rememberMe);
-      if (_rememberMe) {
-        await prefs.setString('user_password', password);
-      } else {
-        await prefs.remove('user_password');
-      }
-      await prefs.setString('business_name', businessName);
-      await prefs.setString('user_phone', '$_selectedCountryCode$phone');
-      await prefs.setString('user_country_code', _selectedCountryCode);
+      await prefs.setString('user_password', password);
+      await prefs.setString('username', username);
       await prefs.setBool('isLoggedIn', true);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Account created successfully!'),
+          content: Text('Please verify your email'),
           duration: Duration(milliseconds: 500),
         ),
       );
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(email: email),
+        ),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -182,180 +154,272 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFC107),
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Sign Up', style: TextStyle(color: Colors.black)),
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text('Prepal', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_forward, color: Colors.black),
+            onPressed: _isLoading ? null : _submit,
+          ),
+        ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            20 + MediaQuery.of(context).viewInsets.bottom,
-          ),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Column(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 12),
-                Center(
-                  child: Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFC107).withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(Icons.eco, size: 44, color: Color(0xFFFFC107)),
+                // Logo area
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Image.asset(
+                    'assets/images/prepal_logo.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 24),
+
+                // Title
+                const Text(
+                  'Sign up',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Please input the required information',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Form
                 Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      TextFormField(
-                        controller: _businessController,
-                        decoration: const InputDecoration(labelText: 'Business name'),
-                        validator: (v) => (v == null || v.isEmpty) ? 'Enter business name' : null,
+                      // Username field
+                      const Text(
+                        'Username',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          hintText: 'deliciousness2027',
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
+                          filled: true,
+                          fillColor: const Color(0xFFE8D5E3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Username is required';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'please input username',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Email field
+                      const Text(
+                        'Email address',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(labelText: 'Email'),
+                        decoration: InputDecoration(
+                          hintText: 'deliciousness@egg.ic',
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
+                          filled: true,
+                          fillColor: const Color(0xFFE8D5E3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email required';
-                          if (!v.contains('@')) return 'Enter valid email';
+                          if (v == null || v.isEmpty) return 'Email is required';
+                          if (!v.contains('@')) return 'Enter a valid email';
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedCountryCode,
-                              decoration: const InputDecoration(labelText: 'Code'),
-                              isExpanded: true,
-                              selectedItemBuilder: (context) {
-                                return _countryCodes
-                                    .map(
-                                      (item) => Text(item['code'] ?? ''),
-                                    )
-                                    .toList();
-                              },
-                              items: _countryCodes
-                                  .map(
-                                    (item) => DropdownMenuItem(
-                                      value: item['code'],
-                                      child: Text(
-                                        '${item['name']} (${item['code']})',
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (value) {
-                                if (value == null) return;
-                                setState(() => _selectedCountryCode = value);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(labelText: 'Phone'),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 8),
+                      Text(
+                        'please input email address',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 24),
+
+                      // Create password field
+                      const Text(
+                        'Create password',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: _obscure,
+                        obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          hintText: '••••••••',
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
+                          filled: true,
+                          fillColor: const Color(0xFFE8D5E3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                            onPressed: () => setState(() => _obscure = !_obscure),
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                           ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password required';
-                          final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
-                          if (!pattern.hasMatch(v)) {
-                            return 'Use at least 8 chars: letters, numbers, #, \$, %, *';
-                          }
+                          if (v == null || v.isEmpty) return 'Password is required';
+                          if (v.length < 8) return 'Password must be at least 8 characters';
+                          
+                          final hasUpperCase = v.contains(RegExp(r'[A-Z]'));
+                          final hasNumber = v.contains(RegExp(r'[0-9]'));
+                          
+                          if (!hasUpperCase) return 'Password must contain at least one capital letter';
+                          if (!hasNumber) return 'Password must contain at least one number';
+                          
                           return null;
                         },
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Please enter 8 characters with one number, one capital letter, and symbols (@, #, etc.)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Retype password field
+                      const Text(
+                        'Retype password',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _confirmController,
-                        obscureText: _obscure,
-                        decoration: const InputDecoration(labelText: 'Confirm password'),
+                        obscureText: _obscureConfirm,
+                        decoration: InputDecoration(
+                          hintText: '••••••••',
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
+                          filled: true,
+                          fillColor: const Color(0xFFE8D5E3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
+                        ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Confirm password';
-                          final pattern = RegExp('^(?=.*[A-Za-z])(?=.*[\\d#\$%*]).{8,}\$');
-                          if (!pattern.hasMatch(v)) {
-                            return 'Use at least 8 chars: letters, numbers, #, \$, %, *';
-                          }
+                          if (v == null || v.isEmpty) return 'Please confirm password';
+                          if (v != _passwordController.text) return 'Passwords do not match';
                           return null;
                         },
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _rememberMe,
-                            onChanged: (value) {
-                              if (value == null) return;
-                              setState(() => _rememberMe = value);
-                            },
-                            activeColor: const Color(0xFFFFC107),
-                          ),
-                          const Text('Remember me'),
-                        ],
+                      Text(
+                        'Please enter the same characters as above',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 32),
+
+                      // Sign up button
                       SizedBox(
-                        width: double.infinity,
-                        height: 48,
+                        height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFC107),
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            backgroundColor: const Color(0xFFD05B2D),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                           ),
                           onPressed: _isLoading ? null : _submit,
                           child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.black)
-                              : const Text('Sign Up', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  'Sign up',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Already have an account? '),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                              );
-                            },
-                            child: const Text('Log In'),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -364,6 +428,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 }

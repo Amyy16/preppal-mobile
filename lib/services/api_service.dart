@@ -79,11 +79,8 @@ class ApiService {
       await Future.delayed(const Duration(milliseconds: 1000));
 
       // Validation
-      if (email.isEmpty ||
-          password.isEmpty ||
-          businessName.isEmpty ||
-          phoneNumber.isEmpty) {
-        throw ApiException('All fields are required');
+      if (email.isEmpty || password.isEmpty || businessName.isEmpty) {
+        throw ApiException('Email, password, and username are required');
       }
 
       if (!email.contains('@')) {
@@ -92,6 +89,14 @@ class ApiService {
 
       if (password.length < 8) {
         throw ApiException('Password must be at least 8 characters');
+      }
+
+      // Check for at least one uppercase letter and one number
+      final hasUpperCase = password.contains(RegExp(r'[A-Z]'));
+      final hasNumber = password.contains(RegExp(r'[0-9]'));
+      
+      if (!hasUpperCase || !hasNumber) {
+        throw ApiException('Password must contain at least one capital letter and one number');
       }
 
       // Simulate successful registration

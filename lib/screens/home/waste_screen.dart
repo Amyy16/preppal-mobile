@@ -47,6 +47,16 @@ class _WasteScreenState extends State<WasteScreen> {
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_forward, color: Colors.white),
+            onPressed: _navigateToAddWaste,
+          ),
+        ],
       ),
       body: _wasteLogs.isEmpty
           ? _buildEmptyState()

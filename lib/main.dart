@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/inventory_item.dart';
 import 'models/waste_log.dart';
@@ -19,14 +18,11 @@ Future<void> main() async {
   await Hive.openBox<InventoryItem>('inventory');
   await Hive.openBox<WasteLog>('waste_logs');
   
-  final prefs = await SharedPreferences.getInstance();
-  final loggedIn = prefs.getBool('isLoggedIn') ?? false;
-  runApp(MyApp(initialLoggedIn: loggedIn));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool initialLoggedIn;
-  const MyApp({super.key, required this.initialLoggedIn});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         scaffoldBackgroundColor: const Color(0xFFFAFAFA),
       ),
-      home: WelcomeScreen(initialLoggedIn: initialLoggedIn),
+      home: const WelcomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
