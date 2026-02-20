@@ -1,4 +1,4 @@
-import 'package:prepal2/domain/entities/user_entity.dart';
+import 'package:prepal2/data/models/auth/user_model.dart';
 import 'package:prepal2/domain/repositories/auth_repository.dart';
 
 class SignupUseCase {
@@ -6,7 +6,7 @@ class SignupUseCase {
 
   SignupUseCase({required this.repository});
 
-  Future<UserEntity> call({
+  Future<UserModel> call({
     required String username,
     required String email,
     required String password,
@@ -31,6 +31,6 @@ class SignupUseCase {
       email: email,
       password: password,
       businessName: businessName,
-    );
+    ) as UserModel;
   }
 }

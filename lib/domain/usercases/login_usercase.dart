@@ -1,4 +1,4 @@
-import 'package:prepal2/domain/entities/user_entity.dart';
+import 'package:prepal2/data/models/auth/user_model.dart';
 import 'package:prepal2/domain/repositories/auth_repository.dart';
 
 class LoginUseCase {
@@ -10,7 +10,8 @@ class LoginUseCase {
 
 	// The 'call' method lets us use the class like a function:
 	// e.g., await LoginUseCase(email: '...', password: '...')
-	Future<UserEntity> call({
+	// => UserModel instead of UserEntity
+	Future<UserModel> call({
 		required String email,
 		required String password,
 	}) async {
@@ -19,6 +20,6 @@ class LoginUseCase {
 			throw Exception('Email and password cannot be empty');
 		}
 
-		return repository.login(email: email, password: password);
+		return repository.login(email: email, password: password) as UserModel;
 	}
 }
