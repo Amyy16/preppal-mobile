@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:prepal2/domain/entities/user_entity.dart';
 
 // This tells the generator: "look for user_model.g.dart"
 part 'user_model.g.dart';
@@ -7,23 +6,31 @@ part 'user_model.g.dart';
 /// @JsonSerializable() annotation enables automatic JSON serialization/deserialization
 /// Run `dart run build_runner build` to generate the serialization code
 @JsonSerializable()
-class UserModel extends UserEntity {
-  /// @JsonKey lets you map JSON field names to Dart field names
-  /// e.g. if API returns "business_name" but we want "businessName" in Dart
-  /// Use @override to indicate this field overrides the parent class field
+class UserModel {
+  /// Unique identifier for the user
+  final String id;
+
+  /// Username chosen by the user
+  final String username;
+
+  /// Email address of the user
+  final String email;
+
+  /// Business name associated with the user's account
   @JsonKey(name: 'business_name')
-  @override
   final String businessName;
 
-  /// Constructor with required parameters
-  /// Uses super() to pass values to parent UserEntity class
+  /// Authentication token for API requests (nullable)
+  final String? token;
+
+  /// Constructor with all required fields
   const UserModel({
-    required super.id,
-    required super.username,
-    required super.email,
+    required this.id,
+    required this.username,
+    required this.email,
     required this.businessName,
-    super.token,
-  }) : super(businessName: businessName);
+    this.token,
+  });
 
   /// [Factory constructor]: creates a UserModel FROM a JSON map
   /// The '_$UserModelFromJson' function is auto-generated in user_model.g.dart
@@ -35,16 +42,5 @@ class UserModel extends UserEntity {
   /// The '_$UserModelToJson' function is also auto-generated
   /// Used when sending data to the API or storing locally
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
-
-  /// [Helper Factory]: Convert a domain Entity into a Model (useful when saving data)
-  /// Bridges the gap between domain layer entities and data layer models
-  factory UserModel.fromEntity(UserEntity entity) {
-    return UserModel(
-      id: entity.id,
-      username: entity.username,
-      email: entity.email,
-      businessName: entity.businessName,
-      token: entity.token,
-    );
-  }
 }
+

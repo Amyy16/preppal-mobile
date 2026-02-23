@@ -1,80 +1,71 @@
-// lib/presentation/screens/auth/signup_screen.dart
+// lib/presentation/screens/auth/login_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:prepal2/presentation/providers/auth_provider.dart';
-import 'package:prepal2/presentation/screens/auth/login_screen.dart';
-import 'package:prepal2/presentation/screens/auth/verification_screen.dart';
+import 'package:prepal2/presentation/screens/auth/signup_screen.dart';
+import 'package:prepal2/presentation/screens/main_shell.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+  // Key to identify and validate the form
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _businessController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController(); // UI only
 
+  // Controllers to read TextField values
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // Tracks whether password is visible or hidden
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    // Always dispose controllers to free memory
     _emailController.dispose();
-    _businessController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSignup() async {
+  Future<void> _handleLogin() async {
+    // Validate all form fields first
     if (!_formKey.currentState!.validate()) return;
 
-    // Confirm password check happens here in the UI
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
-          backgroundColor: Color(0xFFB00020),
-        ),
-      );
-      return;
-    }
+    // Clear any previous errors
+    context.read<AuthProvider>().clearError();
 
-    final success = await context.read<AuthProvider>().signup(
-      username: _usernameController.text.trim(),
+    final success = await context.read<AuthProvider>().login(
       email: _emailController.text.trim(),
-      businessName: _businessController.text.trim(),
       password: _passwordController.text,
     );
 
     if (success && mounted) {
+      // Replace login screen with dashboard (can't go back to login)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => VerificationScreen(
-            email: _emailController.text.trim(),
-          ),
+          builder: (_) => const MainShell(),
         ),
+        // go_router: context.go('/dashboard')
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // context.watch rebuilds this widget whenever AuthProvider changes
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
+          // Prevents overflow when keyboard opens
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Form(
             key: _formKey,
@@ -83,6 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 const SizedBox(height: 48),
 
+                // Logo
                 const CircleAvatar(
                   radius: 50,
                   backgroundColor: Colors.black,
@@ -98,7 +90,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 24),
 
                 const Text(
-                  'Sign up',
+                  'Login',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -108,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 4),
 
                 const Text(
-                  'Create your account to continue',
+                  'Please Input Email and Password',
                   style: TextStyle(
                     fontSize: 13,
                     color: Color(0xFF757575),
@@ -117,30 +109,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 32),
 
-                // Username
-                TextFormField(
-                  controller: _usernameController,
-                  onChanged: (_) => authProvider.clearError(),
-                  decoration: const InputDecoration(
-                    hintText: 'Username',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Email
+                // Email field
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (_) => authProvider.clearError(),
                   decoration: const InputDecoration(
-                    hintText: 'Email',
+                    hintText: 'Email/Username',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -149,36 +124,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     if (!value.contains('@')) {
                       return 'Please enter a valid email';
                     }
-                    return null;
+                    return null; // null means valid
                   },
                 ),
 
                 const SizedBox(height: 16),
 
-                // Business name
-                TextFormField(
-                  controller: _businessController,
-                  onChanged: (_) => authProvider.clearError(),
-                  decoration: const InputDecoration(
-                    hintText: 'Business name',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your business name';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Password
+                // Password field
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   onChanged: (_) => authProvider.clearError(),
                   decoration: InputDecoration(
                     hintText: 'Password',
+                    // Eye icon to toggle password visibility
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -187,43 +146,15 @@ class _SignupScreenState extends State<SignupScreen> {
                         color: Colors.grey,
                       ),
                       onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
+                        setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        );
                       },
                     ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // Confirm Password (UI only)
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  onChanged: (_) => authProvider.clearError(),
-                  decoration: InputDecoration(
-                    hintText: 'Confirm password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscureConfirmPassword =
-                            !_obscureConfirmPassword);
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
                     }
                     return null;
                   },
@@ -238,7 +169,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
                       color: Color(0xFFFFEBEE),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
                     ),
                     child: Text(
                       authProvider.errorMessage!,
@@ -251,9 +184,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 const SizedBox(height: 24),
 
-                // Sign up button
+                // Login button
                 ElevatedButton(
-                  onPressed: authProvider.isLoading ? null : _handleSignup,
+                  onPressed:
+                      authProvider.isLoading ? null : _handleLogin,
                   child: authProvider.isLoading
                       ? const SizedBox(
                           height: 20,
@@ -263,27 +197,28 @@ class _SignupScreenState extends State<SignupScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text('Sign up'),
+                      : const Text('Log in'),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Navigate to Login
+                // Navigate to Signup
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have an account? "),
+                    const Text("Don't have an account? "),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
+                            builder: (_) => const SignupScreen(),
                           ),
+                          // go_router: context.go('/signup')
                         );
                       },
                       child: const Text(
-                        'Login',
+                        'Sign up',
                         style: TextStyle(
                           color: Color(0xFFD32F2F),
                           fontWeight: FontWeight.bold,

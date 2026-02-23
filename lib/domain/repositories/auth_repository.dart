@@ -1,13 +1,13 @@
-import 'package:prepal2/domain/entities/user_entity.dart';
+import 'package:prepal2/data/models/auth/user_model.dart';
 
 abstract class AuthRepository {
-	// Returns a UserEntity on success, throws an Exception on failure.
-	Future<UserEntity> login({
+	// Returns a UserModel on success, throws an Exception on failure.
+	Future<UserModel> login({
 		required String email,
 		required String password,
 	});
 
-	Future<UserEntity> signup({
+	Future<UserModel> signup({
 		required String username,
 		required String email,
 		required String password,
@@ -18,5 +18,5 @@ abstract class AuthRepository {
 	Future<void> logout();
 
 	// Checks if a user session exists (for auto-login on app start).
-	Future<UserEntity?> getLoggedInUser();
+	Future<UserModel?> getLoggedInUser();
 }

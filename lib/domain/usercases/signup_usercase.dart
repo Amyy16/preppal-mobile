@@ -31,6 +31,6 @@ class SignupUseCase {
       email: email,
       password: password,
       businessName: businessName,
-    ) as UserModel;
+    );
   }
 }

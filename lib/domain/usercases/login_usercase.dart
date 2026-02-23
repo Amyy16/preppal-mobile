@@ -20,6 +20,6 @@ class LoginUseCase {
 			throw Exception('Email and password cannot be empty');
 		}
 
-		return repository.login(email: email, password: password) as UserModel;
+		return await repository.login(email: email, password: password);
 	}
 }

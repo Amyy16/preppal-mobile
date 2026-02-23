@@ -1,0 +1,159 @@
+[
+  {
+    "id": "sale_001",
+    "date": "2026-02-17T00:00:00.000",
+    "notes": "Regular Monday",
+    "items": [
+      {
+        "product_id": "prod_001",
+        "product_name": "Whole Milk",
+        "quantity_sold": 12.0,
+        "unit_price": 1500.0
+      },
+      {
+        "product_id": "prod_002",
+        "product_name": "Orange Juice",
+        "quantity_sold": 8.0,
+        "unit_price": 2200.0
+      }
+    ]
+  },
+  {
+    "id": "sale_002",
+    "date": "2026-02-18T00:00:00.000",
+    "notes": "Slow Tuesday",
+    "items": [
+      {
+        "product_id": "prod_003",
+        "product_name": "Sourdough Bread",
+        "quantity_sold": 5.0,
+        "unit_price": 3500.0
+      },
+      {
+        "product_id": "prod_001",
+        "product_name": "Whole Milk",
+        "quantity_sold": 9.0,
+        "unit_price": 1500.0
+      }
+    ]
+  },
+  {
+    "id": "sale_003",
+    "date": "2026-02-19T00:00:00.000",
+    "notes": "Mid-week boost",
+    "items": [
+      {
+        "product_id": "prod_004",
+        "product_name": "Chicken Breast",
+        "quantity_sold": 7.0,
+        "unit_price": 5000.0
+      },
+      {
+        "product_id": "prod_002",
+        "product_name": "Orange Juice",
+        "quantity_sold": 14.0,
+        "unit_price": 2200.0
+      },
+      {
+        "product_id": "prod_005",
+        "product_name": "Mixed Spice Pack",
+        "quantity_sold": 10.0,
+        "unit_price": 800.0
+      }
+    ]
+  },
+  {
+    "id": "sale_004",
+    "date": "2026-02-20T00:00:00.000",
+    "notes": "Thursday market rush",
+    "items": [
+      {
+        "product_id": "prod_001",
+        "product_name": "Whole Milk",
+        "quantity_sold": 20.0,
+        "unit_price": 1500.0
+      },
+      {
+        "product_id": "prod_003",
+        "product_name": "Sourdough Bread",
+        "quantity_sold": 18.0,
+        "unit_price": 3500.0
+      },
+      {
+        "product_id": "prod_004",
+        "product_name": "Chicken Breast",
+        "quantity_sold": 12.0,
+        "unit_price": 5000.0
+      }
+    ]
+  },
+  {
+    "id": "sale_005",
+    "date": "2026-02-21T00:00:00.000",
+    "notes": "Friday steady flow",
+    "items": [
+      {
+        "product_id": "prod_002",
+        "product_name": "Orange Juice",
+        "quantity_sold": 11.0,
+        "unit_price": 2200.0
+      },
+      {
+        "product_id": "prod_006",
+        "product_name": "Frozen Peas",
+        "quantity_sold": 6.0,
+        "unit_price": 1800.0
+      }
+    ]
+  },
+  {
+    "id": "sale_006",
+    "date": "2026-02-22T00:00:00.000",
+    "notes": "Weekend peak",
+    "items": [
+      {
+        "product_id": "prod_001",
+        "product_name": "Whole Milk",
+        "quantity_sold": 15.0,
+        "unit_price": 1500.0
+      },
+      {
+        "product_id": "prod_003",
+        "product_name": "Sourdough Bread",
+        "quantity_sold": 22.0,
+        "unit_price": 3500.0
+      },
+      {
+        "product_id": "prod_004",
+        "product_name": "Chicken Breast",
+        "quantity_sold": 9.0,
+        "unit_price": 5000.0
+      },
+      {
+        "product_id": "prod_005",
+        "product_name": "Mixed Spice Pack",
+        "quantity_sold": 8.0,
+        "unit_price": 800.0
+      }
+    ]
+  },
+  {
+    "id": "sale_007",
+    "date": "2026-02-23T00:00:00.000",
+    "notes": "Sunday closing",
+    "items": [
+      {
+        "product_id": "prod_002",
+        "product_name": "Orange Juice",
+        "quantity_sold": 7.0,
+        "unit_price": 2200.0
+      },
+      {
+        "product_id": "prod_006",
+        "product_name": "Frozen Peas",
+        "quantity_sold": 3.0,
+        "unit_price": 1800.0
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Whole Milk",
+    "category": "Dairy",
+    "production_date": "2025-01-10T00:00:00.000",
+    "expiry_date": "2025-02-01T00:00:00.000",
+    "quantity_available": 5.0,
+    "unit": "L",
+    "low_stock_threshold": 10.0,
+    "is_active": true
+  },
+  {
+    "id": "prod_002",
+    "name": "Orange Juice",
+    "category": "Beverages",
+    "production_date": "2025-01-12T00:00:00.000",
+    "expiry_date": "2025-03-15T00:00:00.000",
+    "quantity_available": 24.0,
+    "unit": "L",
+    "low_stock_threshold": null,
+    "is_active": true
+  },
+  {
+    "id": "prod_003",
+    "name": "Sourdough Bread",
+    "category": "Bakery",
+    "production_date": "2025-01-14T00:00:00.000",
+    "expiry_date": "2025-01-18T00:00:00.000",
+    "quantity_available": 8.0,
+    "unit": "pcs",
+    "low_stock_threshold": 5.0,
+    "is_active": true
+  },
+  {
+    "id": "prod_004",
+    "name": "Chicken Breast",
+    "category": "Meat",
+    "production_date": "2025-01-13T00:00:00.000",
+    "expiry_date": "2025-01-16T00:00:00.000",
+    "quantity_available": 3.0,
+    "unit": "kg",
+    "low_stock_threshold": 5.0,
+    "is_active": true
+  },
+  {
+    "id": "prod_005",
+    "name": "Mixed Spice Pack",
+    "category": "Spices",
+    "production_date": "2025-01-01T00:00:00.000",
+    "expiry_date": "2026-01-01T00:00:00.000",
+    "quantity_available": 15.0,
+    "unit": "g",
+    "low_stock_threshold": null,
+    "is_active": true
+  },
+  {
+    "id": "prod_006",
+    "name": "Frozen Peas",
+    "category": "Frozen",
+    "production_date": "2024-12-01T00:00:00.000",
+    "expiry_date": "2025-06-01T00:00:00.000",
+    "quantity_available": 2.0,
+    "unit": "kg",
+    "low_stock_threshold": 8.0,
+    "is_active": true
+  }
+]
