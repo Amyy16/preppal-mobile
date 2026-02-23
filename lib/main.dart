@@ -118,8 +118,8 @@ class PrepPalApp extends StatelessWidget {
           ),
         ),
       ),
-      // Navigator.push approach - SplashScreen decides where to go
-      home: const SplashScreen(),
+      // Show WelcomeScreen first
+      home: const WelcomeScreen(),
 
       // go_router approach (commented) - uncomment to switch
       // routerConfig: AppRouter.router,

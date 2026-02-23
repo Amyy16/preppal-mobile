@@ -16,66 +16,52 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Listen for auth state to resolve then navigate
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _listenAndNavigate();
-    });
+    _checkAuthAndNavigate();
   }
 
-  void _listenAndNavigate() {
+  Future<void> _checkAuthAndNavigate() async {
     final authProvider = context.read<AuthProvider>();
+    final startedAt = DateTime.now();
+    const minSplash = Duration(milliseconds: 800);
+    const maxWait = Duration(seconds: 3);
 
-    // If already resolved, navigate immediately
-    if (authProvider.status != AuthStatus.initial &&
-        authProvider.status != AuthStatus.loading) {
-      _navigate(authProvider.status);
-      return;
+    while ((authProvider.status == AuthStatus.initial ||
+            authProvider.status == AuthStatus.loading) &&
+        DateTime.now().difference(startedAt) < maxWait) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return;
     }
 
-    // Otherwise wait for the status to change
-    authProvider.addListener(() {
-      if (authProvider.status != AuthStatus.initial &&
-          authProvider.status != AuthStatus.loading) {
-        _navigate(authProvider.status);
-      }
-    });
-  }
-
-  void _navigate(AuthStatus status) {
+    final elapsed = DateTime.now().difference(startedAt);
+    if (elapsed < minSplash) {
+      await Future.delayed(minSplash - elapsed);
+    }
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => status == AuthStatus.authenticated
-            ? const MainShell() // Has session → go to main shell
-            : const WelcomeScreen(),  // No session → go to welcome
+        builder: (_) => authProvider.status == AuthStatus.authenticated
+            ? const MainShell()
+            : const WelcomeScreen(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Color(0xFFD32F2F),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo placeholder — replace with your actual logo asset
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.black,
-              child: Text(
-                'P',
-                style: TextStyle(
-                  fontSize: 60,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            Image.asset(
+              'assets/logo.png',
+              width: 150,
+              height: 150,
             ),
-            SizedBox(height: 16),
-            CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),
@@ -102,27 +88,19 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               const Spacer(flex: 2),
 
-              // Logo
-              const CircleAvatar(
-                radius: 70,
-                backgroundColor: Colors.black,
-                child: Text(
-                  'P',
-                  style: TextStyle(
-                    fontSize: 70,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              // PrepPal Logo
+              Image.asset(
+                'assets/logo.png',
+                width: 200,
+                height: 200,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              // App name
               const Text(
                 'Welcome',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF212121),
                 ),
@@ -130,51 +108,91 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // Tagline from wireframe
               const Text(
-                'PrepPal is here to make prepping\nmore effective and profitable',
+                'PrepPal is here to make prepping more\n'
+                'effective and profitable',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF757575),
-                  height: 1.5,
+                  fontSize: 13,
+                  color: Color(0xFF7A7A7A),
+                  height: 1.4,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                'AI powered app to help you cut down wastage and\n'
+                'optimized your prepping for your business',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF9E9E9E),
+                  height: 1.4,
                 ),
               ),
 
               const Spacer(flex: 2),
 
               // Log In button
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    // go_router: context.go('/login')
-                  );
-                },
-                child: const Text('Log in'),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Sign Up button (outlined style)
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SignupScreen()),
-                    // go_router: context.go('/signup')
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                  side: const BorderSide(color: Color(0xFFD32F2F)),
-                  foregroundColor: const Color(0xFFD32F2F),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFD35A2A),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Log in',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                child: const Text('Sign up'),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Sign Up button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignupScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF3CDD3),
+                    foregroundColor: const Color(0xFF5A3A3A),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Sign up/\nRegister',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 32),
