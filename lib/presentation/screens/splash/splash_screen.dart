@@ -185,7 +185,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Sign up/\nRegister',
+                    'Sign up',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,

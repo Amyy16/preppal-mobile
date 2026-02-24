@@ -119,11 +119,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Progress indicator
+            Row(
+              children: List.generate(
+                4,
+                (index) => Expanded(
+                  child: Container(
+                    height: 6,
+                    margin: EdgeInsets.only(right: index < 3 ? 8 : 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: index < 2
+                          ? const Color(0xFFD35A2A)
+                          : const Color(0xFFEBEBEB),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               const Text(
                 'Product name',
                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -350,6 +372,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ],
           ),
         ),
+        ],
+      ),
       ),
     );
   }

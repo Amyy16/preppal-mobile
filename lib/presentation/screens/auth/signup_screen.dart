@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:prepal2/presentation/providers/auth_provider.dart';
-import 'package:prepal2/presentation/screens/auth/login_screen.dart';
 import 'package:prepal2/presentation/screens/auth/verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -48,7 +47,6 @@ class _SignupScreenState extends State<SignupScreen> {
     final success = await context.read<AuthProvider>().signup(
       username: _usernameController.text.trim(),
       email: _emailController.text.trim(),
-      businessName: '',
       password: _passwordController.text,
     );
 

@@ -14,12 +14,12 @@ class SignupUseCase {
     required String businessName,
   }) async {
     // validation (business rules go here)
-    if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty || businessName.isEmpty) {
+    if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty ) {
       throw Exception('All fields are required');
     }
 
-    if (password.length < 6) {
-      throw Exception('Password must be at least 6 characters');
+    if (password.length < 8) {
+      throw Exception('Password must be at least 8 characters');
     }
 
     if (password != confirmPassword) {

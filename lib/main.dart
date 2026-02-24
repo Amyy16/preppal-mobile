@@ -17,7 +17,11 @@ import 'package:prepal2/domain/usecases/inventory_usecases.dart';
 // Presentation layer
 import 'package:prepal2/presentation/providers/auth_provider.dart';
 import 'package:prepal2/presentation/providers/inventory_provider.dart';
+import 'package:prepal2/presentation/providers/business_provider.dart';
 import 'package:prepal2/presentation/screens/splash/splash_screen.dart';
+
+// Backend Integration
+import 'package:prepal2/core/di/service_locator.dart';
 
 void main() async {
   // Required when calling async code before runApp()
@@ -25,6 +29,9 @@ void main() async {
 
   // Initialize SharedPreferences - needed before building the widget tree
   final sharedPreferences = await SharedPreferences.getInstance();
+
+  // Initialize Backend Services (API Client, Datasources, etc.)
+  await setupServiceLocator();
 
   // --- Wire up the dependency chain (bottom to top) ---
 
@@ -65,6 +72,9 @@ void main() async {
             updateProduct: UpdateProductUseCase(repository: inventoryRepository),
             deleteProduct: DeleteProductUseCase(repository: inventoryRepository),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BusinessProvider(),
         ),
       ],
       child: const PrepPalApp(),

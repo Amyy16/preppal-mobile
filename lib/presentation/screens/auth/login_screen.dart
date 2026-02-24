@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:prepal2/presentation/providers/auth_provider.dart';
-import 'package:prepal2/presentation/screens/auth/signup_screen.dart';
-import 'package:prepal2/presentation/screens/main_shell.dart';
+import 'package:prepal2/presentation/screens/auth/business_details_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -45,13 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success && mounted) {
-      // Replace login screen with dashboard (can't go back to login)
+      // Replace login screen with business details
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const MainShell(),
+          builder: (_) => const BusinessDetailsScreen(),
         ),
-        // go_router: context.go('/dashboard')
+        // go_router: context.go('/business-details')
       );
     }
   }

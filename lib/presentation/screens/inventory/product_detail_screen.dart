@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:prepal2/data/models/inventory/product_model.dart';
-import 'package:prepal2/presentation/providers/inventory_provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final ProductModel product;

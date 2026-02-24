@@ -1,7 +1,9 @@
 // lib/presentation/screens/auth/verification_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:prepal2/presentation/screens/main_shell.dart';
+import 'package:provider/provider.dart';
+import 'package:prepal2/presentation/screens/auth/business_details_screen.dart';
+import 'package:prepal2/presentation/providers/auth_provider.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String email; // Passed from signup screen
@@ -38,24 +40,27 @@ class _VerificationScreenState extends State<VerificationScreen> {
       return;
     }
 
-    setState(() => _isVerifying = true);
+    final authProvider = context.read<AuthProvider>();
+    
+    final success = await authProvider.verifyEmail(
+      email: widget.email,
+      code: _otp,
+    );
 
-    // Simulate verification delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() => _isVerifying = false);
-      // Navigate to dashboard after verification
+    if (success && mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MainShell()),
-        // go_router: context.go('/dashboard')
+        MaterialPageRoute(builder: (_) => const BusinessDetailsScreen()),
       );
+    } else if (mounted) {
+      // Error is shown via watch<AuthProvider>
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -153,10 +158,30 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
               const SizedBox(height: 40),
 
+              // Error message display
+              if (authProvider.errorMessage != null &&
+                  authProvider.status == AuthStatus.error)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFEBEE),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    authProvider.errorMessage!,
+                    style: const TextStyle(
+                      color: Color(0xFFB00020),
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+
               // Verify button
               ElevatedButton(
-                onPressed: _isVerifying ? null : _handleVerify,
-                child: _isVerifying
+                onPressed: authProvider.isLoading ? null : _handleVerify,
+                child: authProvider.isLoading
                     ? const SizedBox(
                         height: 20,
                         width: 20,
@@ -172,11 +197,23 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
               // Resend code option
               TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Code resent!')),
-                  );
-                },
+                onPressed: authProvider.isLoading
+                    ? null
+                    : () async {
+                        final success =
+                            await authProvider.resendVerificationEmail(
+                          widget.email,
+                        );
+                        if (success && mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(authProvider.errorMessage ??
+                                  'Code resent to ${widget.email}'),
+                              backgroundColor: const Color(0xFF4CAF50),
+                            ),
+                          );
+                        }
+                      },
                 child: const Text(
                   'Resend code',
                   style: TextStyle(color: Color(0xFFD32F2F)),
