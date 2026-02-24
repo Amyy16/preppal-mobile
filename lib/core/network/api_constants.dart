@@ -1,33 +1,32 @@
-/// API Constants for backend endpoints and configuration
 class ApiConstants {
-  static const String baseUrl = 'https://prepal-backend-p214-demosites.com';
+  ApiConstants._(); // prevents creating an instance
+
+  static const String baseUrl = 'https://prepal-backend-px1d.onrender.com';
 
   // ─── Authentication Endpoints ─────────────────────────
-  static const String authRegister = '/api/v1/auth/register';
+  static const String authSignup = '/api/v1/auth/signup';
   static const String authLogin = '/api/v1/auth/login';
   static const String authVerifyEmail = '/api/v1/auth/verify-email';
-  static const String authResendVerification =
-      '/api/v1/auth/resend-verification-email';
+  static const String authResendVerification = '/api/v1/auth/resend-verification';
   static const String authForgotPassword = '/api/v1/auth/forgot-password';
   static const String authResetPassword = '/api/v1/auth/reset-password';
 
-  // ─── Business Endpoints ──────────────────────────────
-  static const String businessRegister = '/api/v1/business/business-register';
-  static const String businessGetAll =
-      '/api/v1/business/get-all-user-businesses';
-  static const String businessGetById =
-      '/api/v1/business/get-businesses-by-id';
-  static const String businessUpdate = '/api/v1/business/update-user-custom';
-  static const String businessDelete = '/api/v1/business/delete-a-business';
+  // ─── Business Endpoints (from your backend doc) ───────
+  static const String businessCreate = '/api/v1/business/create';
+  static const String businessGetAll = '/api/v1/businesses';
+  static const String businessGetById = '/api/v1/businesses/'; // + id
+  static const String businessUpdate = '/api/v1/businesses/update/'; // + id
+  static const String businessDelete = '/api/v1/businesses/'; // + id
 
-  // ─── Sales Endpoints ────────────────────────────────
-  static const String salesSubmit = '/api/v1/sales/daily-sales-entry';
-  static const String salesGetAll = '/api/v1/sales/get-all-daily-sales';
-  static const String salesGetReport = '/api/v1/sales/get-daily-sales-report';
-  static const String salesUpdate = '/api/v1/sales/update-daily-sales';
-  static const String salesDelete = '/api/v1/sales/delete-daily-sales';
+  // ─── Daily Sales (based on doc) ───────────────────────
+  static const String dailySales = '/api/v1/daily-sales';
+  static const String dailySalesById = '/api/v1/daily-sales/'; // + id
+  static const String dailySalesUpdate = '/api/v1/daily-sales/update/'; // + id
 
-  // ─── Timeouts ───────────────────────────────────────
+  // ─── Inventory ───────────────────────────────────────
+  static const String inventory = '/api/v1/inventory';
+
+  // ─── Timeouts (seconds) ──────────────────────────────
   static const int connectionTimeout = 30;
   static const int receiveTimeout = 30;
 }
